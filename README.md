@@ -6,11 +6,11 @@ Takes a free-text description, sends it to Claude for a well-formed title and de
 
 ## Installation
 
+Download the latest `.gem` from [GitHub Releases](https://github.com/vnazar/issue/releases) and install it:
+
 ```sh
-git clone https://github.com/vnazar/issue.git
-cd issue
-gem build issue.gemspec
-gem install issue-0.1.0.gem
+gh release download --repo vnazar/issue --pattern '*.gem'
+gem install issue-*.gem
 ```
 
 ## Dependencies
