@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.version       = Issue::VERSION
   spec.authors       = ['Vicente']
   spec.summary       = 'CLI that creates Linear issues with AI and sets up worktrees via workmux'
-  spec.homepage      = 'https://github.com/vicente/linear_wm'
+  spec.homepage      = 'https://github.com/vnazar/issue'
   spec.license       = 'MIT'
 
   spec.required_ruby_version = '>= 3.0'
@@ -18,4 +18,7 @@ Gem::Specification.new do |spec|
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = spec.homepage
+
+  spec.add_development_dependency 'minitest', '~> 5.0'
+  spec.add_development_dependency 'rake', '~> 13.0'
 end

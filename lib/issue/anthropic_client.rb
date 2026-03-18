@@ -10,25 +10,27 @@ module Issue
     API_VERSION = '2023-06-01'
     DEFAULT_MODEL = 'claude-haiku-4-5'
     MAX_TOKENS = 1024
+    DEFAULT_PROMPT = <<~PROMPT
+      A partir del siguiente texto, genera un issue para un equipo de desarrollo.
+
+      Texto:
+      {{description}}
+
+      Responde SOLO JSON valido, sin markdown ni texto extra, con esta forma exacta:
+      {"title":"...","description":"..."}
+
+      Reglas:
+      - title: maximo 72 caracteres, claro y especifico
+      - description: un parrafo bien redactado que explique el problema o la tarea
+      - Escribe en espanol estandar, sin regionalismos
+      - No uses markdown en la descripcion, solo texto plano
+    PROMPT
 
     module_function
 
     def build_prompt(description)
-      <<~PROMPT
-        A partir del siguiente texto, genera un issue para un equipo de desarrollo.
-
-        Texto:
-        #{description}
-
-        Responde SOLO JSON valido, sin markdown ni texto extra, con esta forma exacta:
-        {"title":"...","description":"..."}
-
-        Reglas:
-        - title: maximo 72 caracteres, claro y especifico
-        - description: un parrafo bien redactado que explique el problema o la tarea
-        - Escribe en espanol estandar, sin regionalismos
-        - No uses markdown en la descripcion, solo texto plano
-      PROMPT
+      template = Config.prompt || DEFAULT_PROMPT
+      template.gsub('{{description}}', description)
     end
 
     def extract_title_description(hash)
@@ -63,17 +65,17 @@ module Issue
       [title, description]
     end
 
-    def call(description, model:, api_key:)
+    def call(description, api_key:)
       uri = URI(API_URL)
       request = Net::HTTP::Post.new(uri)
       request['x-api-key'] = api_key
       request['anthropic-version'] = API_VERSION
       request['content-type'] = 'application/json'
-      request.body = JSON.generate({
-                                     model: model,
-                                     max_tokens: MAX_TOKENS,
-                                     messages: [{ role: 'user', content: build_prompt(description) }]
-                                   })
+      request.body = JSON.generate(
+        model: Config.model || DEFAULT_MODEL,
+        max_tokens: MAX_TOKENS,
+        messages: [{ role: 'user', content: build_prompt(description) }]
+      )
 
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true

@@ -16,6 +16,11 @@ module Issue
       [stdout, stderr, status]
     end
 
+    def command_exists?(name)
+      _, _, status = Open3.capture3('which', name)
+      status.success?
+    end
+
     def parse_json(text)
       JSON.parse(text)
     rescue JSON::ParserError
