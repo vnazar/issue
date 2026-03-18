@@ -2,7 +2,7 @@
 
 CLI that creates Linear issues using Claude to generate the title and description, then sets up a worktree with [workmux](https://github.com/vnazar/workmux).
 
-Takes a free-text description, sends it to the Anthropic API for a well-formed title and description, creates the issue in Linear via GraphQL, and runs `workmux add <branch>` to get the worktree ready.
+Takes a free-text description, sends it to Claude for a well-formed title and description, creates the issue in Linear, and runs `workmux add <branch>` to get the worktree ready.
 
 ## Installation
 
@@ -15,17 +15,35 @@ gem install issue-0.1.0.gem
 
 ## Dependencies
 
-Requires [workmux](https://github.com/vnazar/workmux) to be installed and available in your `PATH`. After creating the Linear issue, `issue` calls `workmux add <branch>` to set up the worktree.
+If [workmux](https://github.com/vnazar/workmux) is installed, `issue` uses it to set up the worktree (`workmux add <branch>`). Otherwise it falls back to `git worktree add`.
 
 ## Configuration
 
-Requires three environment variables (or their flag equivalents):
+Requires two environment variables:
 
-| Variable | Flag | Description |
-|---|---|---|
-| `ANTHROPIC_API_KEY` | `--anthropic-key` | Anthropic API key |
-| `LINEAR_API_KEY` | `--token` | Linear API token |
-| `LINEAR_TEAM_ID` | `--team-id` | Linear team ID |
+| Variable | Description |
+|---|---|
+| `ANTHROPIC_API_KEY` | Anthropic API key |
+| `LINEAR_API_KEY` | Linear API token |
+
+You can also configure defaults in `~/.config/issue/config.yaml`:
+
+```yaml
+team: "YOUR_LINEAR_TEAM_ID"
+model: "claude-haiku-4-5"
+prompt: |
+  From the following text, generate an issue for a development team.
+
+  Text:
+  {{description}}
+
+  Reply with valid JSON only, no markdown or extra text:
+  {"title":"...","description":"..."}
+
+  Rules:
+  - title: max 72 characters, clear and specific
+  - description: a well-written paragraph explaining the problem or task
+```
 
 ## Usage
 
@@ -36,12 +54,9 @@ issue "Fix webhook payment timeout"
 Options:
 
 ```
--t, --team-id ID           Linear Team ID
--k, --token TOKEN           Linear API token
--a, --anthropic-key KEY     Anthropic API key
--m, --model MODEL           Anthropic model (default: claude-haiku-4-5)
--V, --version               Show version
--h, --help                  Show help
+-t, --team ID     Linear Team ID
+-V, --version     Show version
+-h, --help        Show help
 ```
 
 ## License
