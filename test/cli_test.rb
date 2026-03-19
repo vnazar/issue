@@ -196,4 +196,17 @@ class CLIValidationTest < Minitest::Test
 
     assert_equal 0, result[:exit_code]
   end
+
+  def test_status_from_config
+    Issue::Config.instance_variable_set(:@data, { 'status' => 'config-state-uuid' })
+
+    result = run_cli(
+      ['Fix bug'],
+      env: { 'ANTHROPIC_API_KEY' => 'k', 'LINEAR_API_KEY' => 't', 'LINEAR_TEAM_ID' => 'x' },
+      command_exists: { 'workmux' => false },
+      run_cmd_responses: { 'git' => ['', '', FakeStatus.success] }
+    )
+
+    assert_equal 0, result[:exit_code]
+  end
 end

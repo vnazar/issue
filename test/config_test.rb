@@ -32,11 +32,17 @@ class ConfigTest < Minitest::Test
     assert_equal 'custom prompt {{description}}', Issue::Config.prompt
   end
 
+  def test_reads_status_from_cached_data
+    Issue::Config.instance_variable_set(:@data, { 'status' => 'state-uuid-123' })
+    assert_equal 'state-uuid-123', Issue::Config.status
+  end
+
   def test_returns_nil_for_missing_keys
     Issue::Config.instance_variable_set(:@data, {})
     assert_nil Issue::Config.team
     assert_nil Issue::Config.model
     assert_nil Issue::Config.prompt
+    assert_nil Issue::Config.status
   end
 
   def test_loads_from_yaml_file

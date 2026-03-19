@@ -7,8 +7,8 @@ require 'uri'
 module Issue
   module LinearClient
     MUTATION = <<~GQL.gsub(/\s+/, ' ').strip
-      mutation CreateIssue($teamId: String!, $title: String!, $description: String!) {
-        issueCreate(input: { teamId: $teamId, title: $title, description: $description }) {
+      mutation CreateIssue($teamId: String!, $title: String!, $description: String!, $stateId: String) {
+        issueCreate(input: { teamId: $teamId, title: $title, description: $description, stateId: $stateId }) {
           success
           issue { identifier title url branchName }
         }
@@ -17,11 +17,11 @@ module Issue
 
     module_function
 
-    def create_issue(token:, team_id:, title:, description:)
-      payload = {
-        query: MUTATION,
-        variables: { teamId: team_id, title: title, description: description }
-      }
+    def create_issue(token:, team_id:, title:, description:, state_id: nil)
+      variables = { teamId: team_id, title: title, description: description }
+      variables[:stateId] = state_id unless Helpers.blank?(state_id)
+
+      payload = { query: MUTATION, variables: variables }
 
       uri = URI('https://api.linear.app/graphql')
       request = Net::HTTP::Post.new(uri)

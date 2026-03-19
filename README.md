@@ -30,6 +30,7 @@ You can also configure defaults in `~/.config/issue/config.yaml`:
 
 ```yaml
 team: "YOUR_LINEAR_TEAM_ID"
+status: "YOUR_LINEAR_STATE_ID"  # optional, defaults to Triage
 model: "claude-haiku-4-5"
 prompt: |
   From the following text, generate an issue for a development team.

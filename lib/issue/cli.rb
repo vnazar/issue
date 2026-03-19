@@ -20,7 +20,8 @@ module Issue
         token: @options[:token],
         team_id: @options[:team],
         title: title,
-        description: description
+        description: description,
+        state_id: @options[:status]
       )
 
       issue_id = issue['identifier'].to_s
@@ -78,6 +79,7 @@ module Issue
       options[:description] = argv.join(' ').strip
 
       options[:team] = resolve_option(options[:team], 'LINEAR_TEAM_ID', Config.team)
+      options[:status] = Config.status.to_s.strip
       options[:token] = ENV.fetch('LINEAR_API_KEY', '').strip
       options[:anthropic_key] = ENV.fetch('ANTHROPIC_API_KEY', '').strip
 

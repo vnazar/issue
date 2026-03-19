@@ -15,6 +15,7 @@ module Issue
     def prompt  = data['prompt']
     def model   = data['model']
     def team    = data['team']
+    def status  = data['status']
 
     def load_file
       return {} unless File.exist?(CONFIG_PATH)
